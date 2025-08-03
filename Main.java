@@ -1,114 +1,84 @@
-import java.util.Scanner;
+rimport java.util.Scanner;
 
-// Class to represent the Bank Account
-class BankAccount {
-    private double balance;
-
-    public BankAccount(double initialBalance) {
-        this.balance = initialBalance;
-    }
-
-    public double getBalance() {
-        return balance;
-    }
-
-    public void deposit(double amount) {
-        balance += amount;
-    }
-
-    public boolean withdraw(double amount) {
-        if (amount <= balance) {
-            balance -= amount;
-            return true;
-        } else {
-            return false; // insufficient funds
-        }
-    }
-}
-
-// Class to represent the ATM
-class ATM {
-    private BankAccount account;
-
-    public ATM(BankAccount account) {
-        this.account = account;
-    }
-
-    public void start() {
+public class Main {
+    public static void main(String[] args) {
+        StudentManagementSystem sms = new StudentManagementSystem();
         Scanner sc = new Scanner(System.in);
         int choice;
 
         do {
-            System.out.println("\n==== ATM MENU ====");
-            System.out.println("1. Withdraw");
-            System.out.println("2. Deposit");
-            System.out.println("3. Check Balance");
-            System.out.println("4. Exit");
-            System.out.print("Choose an option: ");
+            System.out.println("\n--- Student Management System ---");
+            System.out.println("1. Add Student");
+            System.out.println("2. Remove Student");
+            System.out.println("3. Search Student");
+            System.out.println("4. Display All Students");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+
+            while (!sc.hasNextInt()) {
+                System.out.print("Please enter a valid number: ");
+                sc.next();
+            }
             choice = sc.nextInt();
+            sc.nextLine();  // consume newline
 
             switch (choice) {
                 case 1:
-                    System.out.print("Enter amount to withdraw: ");
-                    double withdrawAmount = sc.nextDouble();
-                    withdraw(withdrawAmount);
+                    System.out.print("Enter name: ");
+                    String name = sc.nextLine().trim();
+                    System.out.print("Enter roll number: ");
+                    String roll = sc.nextLine().trim();
+                    System.out.print("Enter grade: ");
+                    String grade = sc.nextLine().trim();
+                    System.out.print("Enter email: ");
+                    String email = sc.nextLine().trim();
+
+                    if (name.isEmpty() || roll.isEmpty() || grade.isEmpty() || email.isEmpty()) {
+                        System.out.println("All fields are required!");
+                    } else if (!email.contains("@")) {
+                        System.out.println("Invalid email format!");
+                    } else if (sms.searchStudent(roll) != null) {
+                        System.out.println("Student with this roll number already exists!");
+                    } else {
+                        sms.addStudent(new Student(name, roll, grade, email));
+                        System.out.println("Student added successfully.");
+                    }
                     break;
+
                 case 2:
-                    System.out.print("Enter amount to deposit: ");
-                    double depositAmount = sc.nextDouble();
-                    deposit(depositAmount);
+                    System.out.print("Enter roll number to remove: ");
+                    String rollToRemove = sc.nextLine();
+                    if (sms.removeStudent(rollToRemove)) {
+                        System.out.println("Student removed.");
+                    } else {
+                        System.out.println("Student not found.");
+                    }
                     break;
+
                 case 3:
-                    checkBalance();
+                    System.out.print("Enter roll number to search: ");
+                    String rollToSearch = sc.nextLine();
+                    Student found = sms.searchStudent(rollToSearch);
+                    if (found != null) {
+                        System.out.println("Student Found:\n" + found);
+                    } else {
+                        System.out.println("Student not found.");
+                    }
                     break;
+
                 case 4:
-                    System.out.println("✅ Thank you for using the ATM.");
+                    sms.displayAllStudents();
                     break;
+
+                case 5:
+                    System.out.println("Exiting... Goodbye!");
+                    break;
+
                 default:
-                    System.out.println("❌ Invalid choice. Please try again.");
+                    System.out.println("Invalid choice. Try again.");
             }
-        } while (choice != 4);
+        } while (choice != 5);
 
         sc.close();
-    }
-
-    public void withdraw(double amount) {
-        if (amount > 0) {
-            boolean success = account.withdraw(amount);
-            if (success) {
-                System.out.println("💸 Please collect your cash: ₹" + amount);
-            } else {
-                System.out.println("❌ Insufficient balance.");
-            }
-        } else {
-            System.out.println("❌ Invalid amount.");
-        }
-    }
-
-    public void deposit(double amount) {
-        if (amount > 0) {
-            account.deposit(amount);
-            System.out.println("✅ Amount deposited: ₹" + amount);
-        } else {
-            System.out.println("❌ Invalid amount.");
-        }
-    }
-
-    public void checkBalance() {
-        System.out.println("💰 Your current balance is: ₹" + account.getBalance());
-    }
-}
-
-// Main class
-public class Main {
-    public static void main(String[] args) {
-        // Create a bank account with initial balance
-        BankAccount account = new BankAccount(10000.00);
-
-        // Create an ATM linked to this account
-        ATM atm = new ATM(account);
-
-        // Start the ATM interface
-        atm.start();
     }
 }
